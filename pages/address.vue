@@ -1,10 +1,10 @@
 <script setup>
-import { reactive, watchEffect } from "vue";
-import { useUserStore } from "@/stores/user";
+import { reactive, watchEffect } from "vue"
+import { useUserStore } from "@/stores/user"
 
-import MainLayout from "@/layouts/MainLayout.vue";
+import MainLayout from "@/layouts/MainLayout.vue"
 
-const userStore = useUserStore();
+const userStore = useUserStore()
 
 const form = reactive({
   contactName: null,
@@ -15,36 +15,36 @@ const form = reactive({
   currentAddress: null,
   loading: false,
   error: null,
-});
+})
 
 const onSubmit = async () => {
-  form.loading = true;
-  form.error = null;
+  form.loading = true
+  form.error = null
 
   if (!form.contactName) {
-    form.error = { type: "contactName", message: "A contact name is required" };
+    form.error = { type: "contactName", message: "A contact name is required" }
   } else if (!form.address) {
-    form.error = { type: "address", message: "An address name is required" };
+    form.error = { type: "address", message: "An address name is required" }
   } else if (!form.zipCode) {
-    form.error = { type: "zipCode", message: "A zip code name is required" };
+    form.error = { type: "zipCode", message: "A zip code name is required" }
   } else if (!form.city) {
-    form.error = { type: "city", message: "A city code name is required" };
+    form.error = { type: "city", message: "A city code name is required" }
   } else if (!form.country) {
     form.error = {
       type: "country",
       message: "A country code name is required",
-    };
+    }
   }
 
   if (form.error) {
-    form.loading = false;
-    return;
+    form.loading = false
+    return
   }
-};
+}
 
 watchEffect(() => {
-  userStore.setLoading(false);
-});
+  userStore.setLoading(false)
+})
 </script>
 
 <template>
