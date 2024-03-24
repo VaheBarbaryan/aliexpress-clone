@@ -58,7 +58,6 @@ watch(
 
 onMounted(() => {
   isProcessing.value = true;
-  console.log("userStore.checkout", userStore.checkout);
   userStore.checkout.forEach((item) => {
     total.value += item.price;
   });

@@ -15,8 +15,8 @@ export const useUserStore = defineStore({
     checkout: (state) => state.s_checkout,
   },
   actions: {
-    setLoading(value) {
-      this.s_loading = value;
+    setLoading(loading) {
+      this.is_loading = loading;
     },
     setIsMenuOverlay(value) {
       this.is_menu_overlay = !!value;
