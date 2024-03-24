@@ -69,7 +69,7 @@ const goToCheckout = () => {
 };
 
 onMounted(() => {
-  setTimeout(() => userStore.setLoading(false), 200);
+  setTimeout(() => userStore.setLoading(false), 8000);
 });
 </script>
 
