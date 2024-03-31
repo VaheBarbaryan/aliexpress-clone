@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/user"
 import MainLayout from "@/layouts/MainLayout.vue"
 
 const userStore = useUserStore()
+const user = useSupabaseUser()
 
 const form = reactive({
   contactName: null,
@@ -14,6 +15,7 @@ const form = reactive({
   country: null,
   currentAddress: null,
   loading: false,
+  isUpdate: false,
   error: null,
 })
 
@@ -40,9 +42,54 @@ const onSubmit = async () => {
     form.loading = false
     return
   }
+
+  if (form.isUpdate) {
+    await useFetch(
+      `/api/prisma/update-address/${form.currentAddress.data.id}`,
+      {
+        method: "PATCH",
+        body: {
+          userId: user.value.id,
+          name: form.contactName,
+          address: form.address,
+          zipCode: form.zipCode,
+          city: form.city,
+          country: form.country,
+        },
+      }
+    )
+
+    form.loading = false
+
+    return navigateTo("/checkout")
+  }
+
+  await useFetch(`/api/prisma/add-address`, {
+    method: "POST",
+    body: {
+      userId: user.value.id,
+      name: form.contactName,
+      address: form.address,
+      zipCode: form.zipCode,
+      city: form.city,
+      country: form.country,
+    },
+  })
 }
 
-watchEffect(() => {
+watchEffect(async () => {
+  form.currentAddress = await useFetch(
+    `/api/prisma/get-address-by-user/${user.value.id}`
+  )
+
+  if (form.currentAddress.data) {
+    const { data } = form.currentAddress.data
+    form.contactName = data.name
+    form.address = data.address
+    form.zipCode = data.zipcode
+    form.city = data.city
+    form.country = data.country
+  }
   userStore.setLoading(false)
 })
 </script>

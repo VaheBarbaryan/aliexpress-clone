@@ -1,17 +1,17 @@
 <script setup>
-import { reactive } from "vue";
-import { useUserStore } from "@/stores/user.js";
+import { reactive } from "vue"
+import { useUserStore } from "@/stores/user.js"
 
-import Footer from "@/components/Footer.vue";
+import Footer from "@/components/Footer.vue"
 
-const userStore = useUserStore();
+const userStore = useUserStore()
 
 const state = reactive({
   isAccountMenu: false,
   isSearching: false,
   isCartHover: true,
   searchItem: "",
-});
+})
 </script>
 
 <template>
@@ -153,7 +153,7 @@ const state = reactive({
             <span
               class="absolute flex items-center justify-center -right-[3px] top-0 bg-[#FF4646] h-[17px] min-w-[17px] text-xs text-white px-0.5 rounded-full"
             >
-              0
+              {{ userStore.cart.length }}
             </span>
             <div class="min-w-[40px]">
               <Icon
