@@ -1,13 +1,14 @@
 <script setup>
-import { ref, computed, watchEffect } from "vue";
-import { useUserStore } from "@/stores/user";
+import { ref, computed, watchEffect, onBeforeMount } from "vue"
+import { useUserStore } from "@/stores/user"
 
-import MainLayout from "@/layouts/MainLayout.vue";
+import MainLayout from "@/layouts/MainLayout.vue"
 
-const userStore = useUserStore();
-const route = useRoute();
+const userStore = useUserStore()
+const route = useRoute()
 
-const currentImage = ref("");
+const product = ref("")
+const currentImage = ref("")
 const images = ref([
   "",
   "https://picsum.photos/id/212/800/800",
@@ -15,19 +16,36 @@ const images = ref([
   "https://picsum.photos/id/165/800/800",
   "https://picsum.photos/id/99/800/800",
   "https://picsum.photos/id/144/800/800",
-]);
+])
 
-const priceComputed = computed(() => "26.40");
+const priceComputed = computed(() => {
+  if (product.value && product.value.data) {
+    return product.value.data.price / 100
+  }
+  return "0.00"
+})
 const isInCart = computed(() =>
-  userStore.cart.some((prod) => route.params.id === prod.id)
-);
+  userStore.cart.some((prod) => Number(route.params.id) === prod.id)
+)
 
-const addToCart = () => {};
+const addToCart = () => {
+  userStore.pushToCart(product.value.data)
+}
 
 watchEffect(() => {
-  currentImage.value = "https://picsum.photos/id/77/800/800";
-  images.value[0] = "https://picsum.photos/id/77/800/800";
-});
+  if (product.value && product.value.data) {
+    const { data } = product.value
+    currentImage.value = data.url
+    images.value[0] = data.url
+    userStore.setLoading(false)
+  }
+})
+
+onBeforeMount(async () => {
+  product.value = await useFetch(
+    `/api/prisma/get-product-by-id/${route.params.id}`
+  )
+})
 </script>
 
 <template>
@@ -42,9 +60,11 @@ watchEffect(() => {
           />
         </div>
         <div class="md:w-[60%] bg-white p-3 rounded-lg">
-          <div v-if="true">
-            <p class="mb-2">Title</p>
-            <p class="font-light text-[12px] mb-2">Description Section</p>
+          <div v-if="product && product.data">
+            <p class="mb-2">{{ product.data.title }}</p>
+            <p class="font-light text-[12px] mb-2">
+              {{ product.data.description }}
+            </p>
           </div>
           <div class="flex items-center p-1.5">
             <span class="h-4 min-w-4 rounded-full p-0.5 bg-[#FFD000] mr-2">

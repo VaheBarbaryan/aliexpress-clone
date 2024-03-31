@@ -24,5 +24,8 @@ export const useUserStore = defineStore({
     setCheckout(checkout) {
       this.s_checkout = checkout;
     },
+    pushToCart(payload) {
+      this.s_cart.push(payload)
+    }
   },
 });
