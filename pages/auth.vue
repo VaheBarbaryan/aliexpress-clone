@@ -1,16 +1,17 @@
 <script setup>
-// const client = useSupabaseClient()
-// const user = useSupabaseUser()
+const client = useSupabaseClient()
+const user = useSupabaseUser()
 
 const login = async (prov) => {
   const { data, error } = client.auth.signInWithOAuth({ provider: prov })
 }
 
-// watchEffect(() => {
-//   if(user.value) {
-//     navigateTo('/')
-//   }
-// })
+watchEffect(() => {
+  console.log("user", user.value)
+  if (user.value) {
+    navigateTo("/")
+  }
+})
 </script>
 
 <template>

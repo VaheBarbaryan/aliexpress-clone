@@ -4,7 +4,7 @@ export const useUserStore = defineStore({
   id: "user",
   state: () => ({
     is_menu_overlay: false,
-    is_loading: false,
+    is_loading: true,
     s_cart: [],
     s_checkout: [],
   }),

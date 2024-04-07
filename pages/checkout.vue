@@ -1,67 +1,65 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useUserStore } from "@/stores/user";
+import { ref, onMounted, onBeforeMount, watchEffect, watch } from "vue"
+import { useUserStore } from "@/stores/user"
 
-import MainLayout from "@/layouts/MainLayout.vue";
+import MainLayout from "@/layouts/MainLayout.vue"
 
-const userStore = useUserStore();
+const userStore = useUserStore()
+const user = useSupabaseUser()
+const route = useRoute()
 
-let stripe = null;
-let elements = null;
-let cards = null;
-let form = null;
-let total = ref(0);
-let clientSecret = null;
-let currentAddress = ref(null);
-let isProcessing = ref(false);
+let stripe = null
+let elements = null
+let cards = null
+let form = null
+let total = ref(0)
+let clientSecret = null
+let currentAddress = ref(null)
+let isProcessing = ref(false)
 
-const products = [
-  {
-    id: 1,
-    title: "title",
-    description: "This is description",
-    url: "https://picsum.photos/id/7/800/800",
-    price: 6899,
-  },
-  {
-    id: 2,
-    title: "title",
-    description: "This is description",
-    url: "https://picsum.photos/id/7/800/800",
-    price: 9899,
-  },
-  {
-    id: 3,
-    title: "title",
-    description: "This is description",
-    url: "https://picsum.photos/id/71/800/800",
-    price: 9699,
-  },
-];
+const stripeInit = async () => {}
 
-const stripeInit = async () => {};
+const pay = async () => {}
 
-const pay = async () => {};
+const createOrder = async (stripId) => {}
 
-const createOrder = async (stripId) => {};
-
-const showError = (errorMsg) => {};
+const showError = (errorMsg) => {}
 
 watch(
   () => total.value,
   async () => {
     if (total.value > 0) {
-      await stripeInit();
+      await stripeInit()
     }
   }
-);
+)
+
+watchEffect(() => {
+  if (route.fullPath === "/checkout" && !user.value) {
+    return navigateTo("/auth")
+  }
+})
 
 onMounted(() => {
-  isProcessing.value = true;
+  isProcessing.value = true
   userStore.checkout.forEach((item) => {
-    total.value += item.price;
-  });
-});
+    total.value += item.price
+  })
+})
+
+onBeforeMount(async () => {
+  if (userStore.checkout.length < 1) {
+    return navigateTo("/shoppingcart")
+  }
+
+  total.value = 0.0
+
+  if (user.value) {
+    currentAddress.value = await useFetch(
+      `/api/prisma/get-address-by-user/${user.value.id}`
+    )
+  }
+})
 </script>
 
 <template>
@@ -71,7 +69,7 @@ onMounted(() => {
         <div class="md:w-[65%]">
           <div class="bg-white rounded-lg p-4">
             <div class="text-xl font-semibold mb-2">Shipping Address</div>
-            <div v-if="false">
+            <div v-if="currentAddress && currentAddress.data">
               <nuxt-link
                 to="/address"
                 class="flex items-center pb-2 text-blue-500 hover:text-red-400"
@@ -84,23 +82,29 @@ onMounted(() => {
                 <ul class="text-xs">
                   <li class="flex items-center gap-2">
                     <div>Contact name:</div>
-                    <div class="font-bold">TEST</div>
+                    <div class="font-bold">{{ currentAddress.data.name }}</div>
                   </li>
                   <li class="flex items-center gap-2">
                     <div>Address:</div>
-                    <div class="font-bold">TEST</div>
+                    <div class="font-bold">
+                      {{ currentAddress.data.address }}
+                    </div>
                   </li>
                   <li class="flex items-center gap-2">
                     <div>Zip Code:</div>
-                    <div class="font-bold">TEST</div>
+                    <div class="font-bold">
+                      {{ currentAddress.data.zipcode }}
+                    </div>
                   </li>
                   <li class="flex items-center gap-2">
                     <div>City:</div>
-                    <div class="font-bold">TEST</div>
+                    <div class="font-bold">{{ currentAddress.data.city }}</div>
                   </li>
                   <li class="flex items-center gap-2">
                     <div>Country:</div>
-                    <div class="font-bold">TEST</div>
+                    <div class="font-bold">
+                      {{ currentAddress.data.country }}
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -115,7 +119,7 @@ onMounted(() => {
             </nuxt-link>
           </div>
           <div id="Items" class="bg-white rounded-lg p-4 mt-4">
-            <div v-for="product in products" :key="product.id">
+            <div v-for="product in userStore.checkout" :key="product.id">
               <checkout-item :product="product" />
             </div>
           </div>
