@@ -83,12 +83,13 @@ watchEffect(async () => {
   )
 
   if (form.currentAddress.data) {
-    const { data } = form.currentAddress.data
+    const data = form.currentAddress.data
     form.contactName = data.name
     form.address = data.address
     form.zipCode = data.zipcode
     form.city = data.city
     form.country = data.country
+    form.isUpdate = true
   }
   userStore.setLoading(false)
 })

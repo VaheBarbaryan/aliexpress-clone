@@ -3,8 +3,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
-    const orders = await prisma.orders.findMany({
-        where: { userId: Number(event.context.params.userId) },
+    const result = await prisma.orders.findMany({
+        where: { userId: event.context.params.id },
         orderBy: { id: 'desc' },
         include: {
             orderItem: {
@@ -15,5 +15,5 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    return orders
+    return result
 })

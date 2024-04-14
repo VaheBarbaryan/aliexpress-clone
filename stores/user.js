@@ -26,6 +26,9 @@ export const useUserStore = defineStore({
     },
     pushToCart(payload) {
       this.s_cart.push(payload)
+    },
+    emptyCart() {
+      this.s_cart = []
     }
   },
 });
